@@ -1,0 +1,2 @@
+debian/update-gummiboot usr/sbin
+debian/zz-update-gummiboot etc/initramfs/post-update.d

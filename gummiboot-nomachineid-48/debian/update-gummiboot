@@ -1,0 +1,87 @@
+#!/bin/sh
+#
+# Edits © 2015 Riccardo Boninsegna <rboninsegna2@gmail.com>
+# Original © 2014 Julian Andres Klode <jak@debian.org>
+#
+
+set -e
+set -u
+
+# TODO: This needs to be done more clever
+determine_root() {
+    sed 's/#.*//g' /etc/fstab | awk '($2 == "/") {print $1}'
+}
+
+install_kernel() {
+    install -D /boot/vmlinuz-$KERNEL $GUMMIBOOT_EFI/linux-$KERNEL/linux
+    if [ -e /boot/initrd.img-$KERNEL ]; then
+        install -D /boot/initrd.img-$KERNEL $GUMMIBOOT_EFI/linux-$KERNEL/initrd
+    fi
+}
+
+install_entry() {
+    dir="$GUMMIBOOT_EFI/loader/entries/"
+    entry="$dir/linux-$KERNEL.conf"
+    options="root=$GUMMIBOOT_ROOT $GUMMIBOOT_OPTIONS"
+
+    [ -e $dir ] || mkdir -p $dir
+
+    cat > $entry << EOF
+title $PRETTY_NAME
+version $KERNEL
+options $options
+linux /linux-$KERNEL/linux
+EOF
+    if [ -e $GUMMIBOOT_EFI/linux-$KERNEL/initrd ]; then
+        echo "initrd /linux-$KERNEL/initrd" >> $entry
+    fi
+}
+
+do_install() {
+    if [ -z "$GUMMIBOOT_ROOT" ]; then
+        echo "ERROR: Cannot determine root partition, please set it in one of:" >&2
+        echo "    /etc/fstab" >&2
+        echo "    /etc/default/gummiboot" >&2
+        exit 1
+    fi
+    echo "Install $KERNEL to ESP" >&2
+    install_kernel
+    install_entry
+}
+
+do_remove() {
+    echo "Remove $KERNEL from ESP" >&2
+    rm -r $GUMMIBOOT_EFI/linux-$KERNEL/ || true
+    rm $GUMMIBOOT_EFI/loader/entries/linux-$KERNEL.conf || true
+}
+
+
+# PROGRAM STARTS HERE
+# Default options
+GUMMIBOOT_EFI="/boot/efi"
+GUMMIBOOT_ROOT=""
+GUMMIBOOT_OPTIONS="ro quiet"
+
+# Override default options
+if [ -e /etc/default/gummiboot ]; then
+    . /etc/default/gummiboot
+fi
+
+if [ -z "$GUMMIBOOT_ROOT" ] ; then
+    GUMMIBOOT_ROOT="$(determine_root)"
+fi
+
+# Load PRETTY_NAME
+. /etc/os-release
+
+# Decide what to do
+if [ "$#" -lt 1 ]; then
+    KERNEL="$(uname -r)"
+else
+    KERNEL="$1"
+fi
+if [ -e /boot/vmlinuz-$KERNEL ]; then
+    do_install
+else
+    do_remove
+fi

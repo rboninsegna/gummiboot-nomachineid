@@ -1,0 +1,10 @@
+#!/usr/bin/make -f
+%:
+	dh $@ --with autoreconf
+
+override_dh_auto_configure:
+	dh_auto_configure -- --disable-silent-rules
+
+override_dh_gencontrol:
+	dh_gencontrol -- -Vmisc:Built-Using="$(shell dpkg-query -W \
+		-f='$${source:Package} (= $${source:Version})' gnu-efi)"

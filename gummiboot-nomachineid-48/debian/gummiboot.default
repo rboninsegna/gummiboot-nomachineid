@@ -1,0 +1,11 @@
+# Run update-gummiboot after editing this file
+#
+
+# The EFI boot partition
+GUMMIBOOT_EFI="/boot/efi"
+
+# Set the root device. If not specified, this is read from /proc/cmdline
+GUMMIBOOT_ROOT=""
+
+# Set the options to pass to the kernel command line
+GUMMIBOOT_OPTIONS="ro quiet"

@@ -1,0 +1,23 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Source: http://cgit.freedesktop.org/gummiboot/
+
+Files: debian/*
+Copyright: © 2014 Julian Andres Klode <jak@debian.org>
+License: LGPL-2.1+
+
+Files: *
+Copyright: © 2012 Harald Hoyer <harald@redhat.com>
+           © 2012-2013 Kay Sievers <kay@vrfy.org>
+           © 2013 Lennart Poettering
+           © 2013 Intel Corporation
+           © 2013 Karel Zak <kzak@redhat.com>
+License: LGPL-2.1+
+
+License: LGPL-2.1+
+ This program is free software; you can redistribute it and/or modify it
+ under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation; either version 2.1 of the License, or
+ (at your option) any later version.
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ can be found in file "/usr/share/common-licenses/LGPL-2.1".

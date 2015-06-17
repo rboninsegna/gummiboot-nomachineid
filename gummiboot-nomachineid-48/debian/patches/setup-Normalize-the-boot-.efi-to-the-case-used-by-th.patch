@@ -1,0 +1,68 @@
+From: Julian Andres Klode <jak@debian.org>
+Date: Tue, 3 Jun 2014 17:41:51 +0200
+Subject: setup: Normalize the boot*.efi to the case used by the file system
+
+Ensure that bootx64.efi and friends use the same case as the already
+existing file to ensure that we correctly replace it on systems where
+the ESP is mounted using utf8 (such as Debian).
+
+This also changes the default case of these files to lower case as
+it completely replaces the strupper function.
+
+Bug-Debian: http://bugs.debian.org/745280
+---
+ src/setup/setup.c | 32 ++++++++++++++++++++++++++------
+ 1 file changed, 26 insertions(+), 6 deletions(-)
+
+diff --git a/src/setup/setup.c b/src/setup/setup.c
+index 0cfaccf..cb96a85 100644
+--- a/src/setup/setup.c
++++ b/src/setup/setup.c
+@@ -682,13 +682,33 @@ finish:
+         return r;
+ }
+ 
+-static char* strupper(char *s) {
+-        char *p;
++static int normalize_filename_case(char *name) {
++        char *base_start;
++        char *base;
++        DIR *d;
++        struct dirent *de;
++
++        base_start = strrchr(name, '/');
++        base = base_start + 1;
++
++        *base_start = 0;
++        d = opendir(name);
++        *base_start = '/';
++
++        if (d == NULL)
++                return -errno;
+ 
+-        for (p = s; *p; p++)
+-                *p = toupper(*p);
++        while ((de = readdir(d))) {
++                /* Normalize (only) the base name of the given path */
++                if (strcasecmp(de->d_name, base) == 0) {
++                        strcpy(base, de->d_name);
++                        break;
++                }
++        }
+ 
+-        return s;
++        closedir(d);
++
++        return 0;
+ }
+ 
+ static int mkdir_one(const char *prefix, const char *suffix) {
+@@ -765,7 +785,7 @@ static int copy_one_file(const char *esp_path, const char *name, bool force) {
+                         r = -ENOMEM;
+                         goto finish;
+                 }
+-                strupper(strrchr(v, '/') + 1);
++                normalize_filename_case(v);
+ 
+                 k = copy_file(p, v, force);
+                 if (k < 0 && r == 0) {

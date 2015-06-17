@@ -1,0 +1,54 @@
+gummiboot-nomachineid (48-100) unstable; urgency=medium
+  * Strip out all features related to machine-id implementation (but not to its tolerability)
+  ** debian/control: Don't require dbus either
+  ** Current and future kernels will be installed to "{EFI partition}/linux-{version string}/"
+     instead of "{EFI partition}/{machine-id}/{version string}/"
+  * Update update-gummiboot(8) manpage with clearer facts and slight changes
+  * Update gummiboot(8) manpage with more relevant documentation links
+  * New manpage: gummiboot(5), explaining /etc/default/gummiboot
+  * If you can read this, you might be an above-average smart computer user
+  * debian/control: Self-promotion
+  * debian/control: Replaces inferior versions of "gummiboot" package
+  ** debian/control: Provides virtual "gummiboot" package
+  * debian/control: Updated description
+
+ -- Riccardo Boninsegna <rboninsegna2@gmail.com>  Wed, 17 Jun 2015 22:00:00 +0200
+
+gummiboot (48-2) unstable; urgency=medium
+
+  * Replace systemd hard dependency for machine-id generation with dbus
+    (not ideal but maybe more tolerable?) -- Really closes #749706 ;)
+
+ -- Riccardo Boninsegna <rboninsegna2@gmail.com>  Tue, 16 Jun 2015 21:51:40 +0200
+
+gummiboot (48-1) unstable; urgency=medium
+
+  * New (last) upstream release
+  * debian/control: Standards-Version: 3.9.6
+
+ -- Julian Andres Klode <jak@debian.org>  Tue, 12 May 2015 16:51:40 +0200
+
+gummiboot (45-2) unstable; urgency=medium
+
+  * debian/control: Make sure we build against gnu-efi 3.0v-5
+  * Add a Built-Using for gnu-efi
+
+ -- Julian Andres Klode <jak@debian.org>  Mon, 21 Jul 2014 13:38:36 +0200
+
+gummiboot (45-1) unstable; urgency=medium
+
+  [ Julian Andres Klode ]
+  * Normalize name cases bootx64.efi and friends (Closes: #745280)
+  * debian/control: Promote systemd from Recommends to Pre-Depends
+    (Closes: #749706)
+  * update-gummiboot: Ensure loader/entries is created (Closes: #745279)
+  * Build-Conflict with autoreconf2.13 (Closes: #754911)
+  * Build-Depend on gnu-efi (>= 3.0v-4~) or (<< 3.0v) to catch broken versions
+
+ -- Julian Andres Klode <jak@debian.org>  Sat, 19 Jul 2014 14:38:44 +0200
+
+gummiboot (44-1) unstable; urgency=low
+
+  * Initial upload to Debian (Closes: #680265)
+
+ -- Julian Andres Klode <jak@debian.org>  Thu, 10 Apr 2014 21:26:26 +0200

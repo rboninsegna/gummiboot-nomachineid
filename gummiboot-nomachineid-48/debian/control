@@ -1,0 +1,35 @@
+Source: gummiboot-nomachineid
+Section: admin
+Priority: optional
+Maintainer: Riccardo Boninsegna <rboninsegna2@gmail.com>
+Build-Depends: debhelper (>= 9), dh-autoreconf, docbook-xsl, gnu-efi (>= 3.0v-5~) | gnu-efi (<< 3.0v), libblkid-dev, pkg-config, xsltproc
+Build-Conflicts: autoconf2.13
+Standards-Version: 3.9.6
+Vcs-Git: git://anonscm.debian.org/collab-maint/gummiboot.git
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/gummiboot.git
+Homepage: http://freedesktop.org/wiki/Software/gummiboot/
+
+Package: gummiboot-nomachineid
+Architecture: i386 amd64 x32 ia64
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Built-Using: ${misc:Built-Using}
+Multi-Arch: foreign
+Conflicts: gummiboot (<=48-10)
+Replaces: gummiboot (<=48-10)
+Provides: gummiboot
+Description: UEFI bootloader
+ gummiboot is a simple UEFI bootloader which executes an EFI binary from a file-defined list.
+ It optionally allows for arguments to be passed to a Linux kernel.
+ .
+ In contrast to other bootloaders like grub, gummiboot requires all configuration files,
+ kernels, and ramdisks to reside on the ESP; Linux kernels also need to be built with CONFIG_EFI_STUB.
+ An advantage of this design is not requiring /boot to be on a plain partition if
+ you're using a setup not directly supported by GRUB, such as an encrypted root filesystem.
+ .
+ The Debian additions to this package take care of creating the configuration files and
+ copying the kernels to the ESP partition. It requires a mounted efivarfs for full functionality,
+ but will install just fine as the default boot loader (as used in Apple's graphical boot selector).
+ .
+ This fork of gummiboot removes (in a backwards-compatible way) support for the "machine-id" entry parameter,
+ as this package's maintainer deems such a feature unnecessary in a single-boot computer,
+ yet requires depending on systemd or dbus for an easy practical implementation.

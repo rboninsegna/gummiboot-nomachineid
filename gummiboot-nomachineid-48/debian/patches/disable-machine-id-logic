@@ -1,0 +1,175 @@
+Description: Remove code related to machine-id
+ Makes the gummiboot(8) command not require /etc/machine-id (thus avoiding a Pre-Depends on systemd)
+ nor /var/lib/dbus/machine-id (thus avoiding a Depends on dbus).
+ .
+ In Debian-like OSes, also requires appropriate changes to update-gummiboot(8).
+ .
+ World's-least-dependencies mainstream boot loader?
+Author: Riccardo Boninsegna <rboninsegna2@gmail.com>
+Forwarded: no
+Last-Update: 2015-06-17
+
+--- gummiboot-nomachineid-48.orig/README
++++ gummiboot-nomachineid-48/README
+@@ -8,13 +8,13 @@ file fragments, kernels, initrds, other
+ ESP. Linux kernels must be built with CONFIG_EFI_STUB to be able to be
+ directly executed as an EFI image.
+ 
+-gummiboot reads simple and entirely generic configurion files; one file
++gummiboot reads simple and entirely generic configuration files; one file
+ per boot entry to select from.
+ 
+ Pressing Space (or most other) keys during bootup will show an on-screen
+ menu with all configured entries to select from. Pressing enter on the
+ selected entry loads and starts the EFI image.
+-
++Pressing "e" on the entry menu shows and optionally edits the kernel command line.
+ If no timeout is configured and no key pressed during bootup, the default
+ entry is booted right away.
+ 
+--- gummiboot-nomachineid-48.orig/man/gummiboot.xml
++++ gummiboot-nomachineid-48/man/gummiboot.xml
+@@ -128,10 +128,7 @@
+         <refsect1>
+                 <title>See Also</title>
+                 <para>
+-                        <ulink url="http://freedesktop.org/wiki/Software/gummiboot">Gummiboot wiki</ulink>
+-                        <ulink url="http://www.freedesktop.org/wiki/Specifications/BootLoaderSpec">Boot loader specification</ulink>
+-                        <ulink url="http://www.freedesktop.org/wiki/Software/systemd/BootLoaderInterface">Systemd boot loader interface</ulink>
+-                        <citerefentry><refentrytitle>bootctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>
++                        <ulink url="https://wiki.archlinux.org/index.php/Gummiboot">Arch Linux Wiki: Gummiboot</ulink>
+                 </para>
+         </refsect1>
+ </refentry>
+--- gummiboot-nomachineid-48.orig/src/efi/gummiboot.c
++++ gummiboot-nomachineid-48/src/efi/gummiboot.c
+@@ -1239,45 +1239,7 @@ static VOID config_entry_add_from_file(C
+         }
+         FreePool(initrd);
+ 
+-        if (entry->machine_id) {
+-                CHAR16 *var;
+-
+-                /* append additional options from EFI variables for this machine-id */
+-                var = PoolPrint(L"LoaderEntryOptions-%s", entry->machine_id);
+-                if (var) {
+-                        CHAR16 *s;
+-
+-                        if (efivar_get(var, &s) == EFI_SUCCESS) {
+-                                if (entry->options) {
+-                                        CHAR16 *s2;
+-
+-                                        s2 = PoolPrint(L"%s %s", entry->options, s);
+-                                        FreePool(entry->options);
+-                                        entry->options = s2;
+-                                } else
+-                                        entry->options = s;
+-                        }
+-                        FreePool(var);
+-                }
+-
+-                var = PoolPrint(L"LoaderEntryOptionsOneShot-%s", entry->machine_id);
+-                if (var) {
+-                        CHAR16 *s;
+-
+-                        if (efivar_get(var, &s) == EFI_SUCCESS) {
+-                                if (entry->options) {
+-                                        CHAR16 *s2;
+-
+-                                        s2 = PoolPrint(L"%s %s", entry->options, s);
+-                                        FreePool(entry->options);
+-                                        entry->options = s2;
+-                                } else
+-                                        entry->options = s;
+-                                efivar_set(var, NULL, TRUE);
+-                        }
+-                        FreePool(var);
+-                }
+-        }
++	/* machine-id handling code removed */
+ 
+         entry->device = device;
+         entry->file = StrDuplicate(file);
+@@ -1511,24 +1473,7 @@ static VOID config_title_generate(Config
+         if (unique)
+                 return;
+ 
+-        /* add machine-id to non-unique titles */
+-        for (i = 0; i < config->entry_count; i++) {
+-                CHAR16 *s;
+-                CHAR16 *m;
+-
+-                if (!config->entries[i]->non_unique)
+-                        continue;
+-                if (!config->entries[i]->machine_id)
+-                        continue;
+-
+-                m = StrDuplicate(config->entries[i]->machine_id);
+-                m[8] = '\0';
+-                s = PoolPrint(L"%s (%s)", config->entries[i]->title_show, m);
+-                FreePool(config->entries[i]->title_show);
+-                config->entries[i]->title_show = s;
+-                config->entries[i]->non_unique = FALSE;
+-                FreePool(m);
+-        }
++        /* machine-id handling code removed */
+ 
+         unique = TRUE;
+         for (i = 0; i < config->entry_count; i++) {
+--- gummiboot-nomachineid-48.orig/src/setup/setup.c
++++ gummiboot-nomachineid-48/src/setup/setup.c
+@@ -1229,43 +1229,23 @@ static int remove_variables(const uint8_
+ }
+ 
+ static int install_loader_config(const char *esp_path) {
+-        char *p = NULL;
+-        char line[64];
+-        char *machine = NULL;
+-        FILE *f;
++        /** Create default global preferences file */
++	char *filename = NULL;
++        FILE *file;
+ 
+-        f = fopen("/etc/machine-id", "re");
+-        if (!f)
+-                return -errno;
+-
+-        if (fgets(line, sizeof(line), f) != NULL) {
+-                char *s;
+-
+-                s = strchr(line, '\n');
+-                if (s)
+-                        s[0] = '\0';
+-                if (strlen(line) == 32)
+-                        machine = line;
+-        }
+-
+-        fclose(f);
+-
+-        if (!machine)
+-                return -ESRCH;
+-
+-        if (asprintf(&p, "%s/%s", esp_path, "loader/loader.conf") < 0) {
+-                fprintf(stderr, "Out of memory.\n");
++        if (asprintf(&filename, "%s/%s", esp_path, "loader/loader.conf") < 0) {
++                fprintf(stderr, "Can't allocate memory for filename.\n");
+                 return -ENOMEM;
+         }
+ 
+-        f = fopen(p, "wxe");
+-        if (f) {
+-                fprintf(f, "#timeout 3\n");
+-                fprintf(f, "default %s-*\n", machine);
+-                fclose(f);
++        file = fopen(filename, "wxe");
++        if (file) {
++                fprintf(file, "#timeout 3\n");
++                fclose(file);
+         }
++	else fprintf(stderr, "Warning: failed creating %s/loader/loader.conf\n", esp_path);
+ 
+-        free(p);
++        free(filename);
+         return 0;
+ }
+ 

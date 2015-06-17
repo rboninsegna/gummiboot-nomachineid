@@ -1,0 +1,3 @@
+Set-boot-efi-as-default-ESP-mount-point.patch
+setup-Normalize-the-boot-.efi-to-the-case-used-by-th.patch
+disable-machine-id-logic

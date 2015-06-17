@@ -1,0 +1,10 @@
+#!/bin/sh
+case "$DPKG_MAINTSCRIPT_PACKAGE" in
+    linux-image-*)
+        # update-gummiboot will be run by the kernel hooks later on
+        exit 0
+        ;;
+    *)
+        update-gummiboot "$1"
+        ;;
+esac

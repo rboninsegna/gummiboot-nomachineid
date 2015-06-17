@@ -1,0 +1,18 @@
+#!/bin/sh
+# postinst script for gummiboot
+
+set -e
+
+. /etc/default/gummiboot
+
+if [ "$1" = "configure" -a "$2" = "" ]; then
+    for kernel in /boot/vmlinuz-*; do
+        update-gummiboot $(echo $kernel | cut -f2- -d-)
+    done
+fi
+
+if [ "$1" = "configure" ]; then
+    gummiboot update --path="$GUMMIBOOT_EFI" || :
+fi
+
+#DEBHELPER#
