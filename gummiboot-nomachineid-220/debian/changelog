@@ -1,8 +1,9 @@
 gummiboot-nomachineid (220-1) unstable; urgency=high
   * Bugfix: `update-gummiboot` was not being packaged
+  * Bugfix (?): source package builds fine
   * Bump version number to reflect full compatibility with systemd-boot v220
 
- -- Riccardo Boninsegna <rboninsegna2@gmail.com>  Wed, 8 Jul 2015 00:00:20 +0200
+ -- Riccardo Boninsegna <rboninsegna2@gmail.com>  Wed, 8 Jul 2015 00:40:20 +0200
 
 gummiboot-nomachineid (48-100) unstable; urgency=medium
   * Strip out all features related to machine-id implementation (but not to its tolerability)
