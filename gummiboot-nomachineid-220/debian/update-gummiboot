@@ -41,7 +41,7 @@ do_install() {
     if [ -z "$GUMMIBOOT_ROOT" ]; then
         echo "ERROR: Cannot determine root partition, please set it in one of:" >&2
         echo "    /etc/fstab" >&2
-        echo "    /etc/default/gummiboot" >&2
+        echo "    /etc/default/gummiboot-nomachineid" >&2
         exit 1
     fi
     echo "Install $KERNEL to ESP" >&2
@@ -63,8 +63,8 @@ GUMMIBOOT_ROOT=""
 GUMMIBOOT_OPTIONS="ro quiet"
 
 # Override default options
-if [ -e /etc/default/gummiboot ]; then
-    . /etc/default/gummiboot
+if [ -e /etc/default/gummiboot-nomachineid ]; then
+    . /etc/default/gummiboot-nomachineid
 fi
 
 if [ -z "$GUMMIBOOT_ROOT" ] ; then

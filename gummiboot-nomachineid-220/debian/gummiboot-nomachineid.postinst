@@ -3,7 +3,12 @@
 
 set -e
 
-. /etc/default/gummiboot
+# Upgrade from gummiboot
+if [ -e /etc/default/gummiboot ]; then
+    mv -f /etc/default/gummiboot /etc/default/gummiboot-nomachineid
+fi
+
+. /etc/default/gummiboot-nomachineid
 
 if [ "$1" = "configure" -a "$2" = "" ]; then
     for kernel in /boot/vmlinuz-*; do
