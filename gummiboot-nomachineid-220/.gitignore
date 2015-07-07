@@ -5,7 +5,7 @@
 *.log
 .deps
 .libs
-*.8
+man/*.8
 .dirstamp
 /gummiboot
 /gummiboot.so
@@ -15,6 +15,13 @@
 /stubx64.efi
 /stubia32.efi
 /test-disk
+
+debian/autoreconf.after
+debian/autoreconf.before
+debian/files
+debian/gummiboot-nomachineid.substvars
+debian/gummiboot-nomachineid/
+linuxx64.efi.stub
 
 Makefile
 aclocal.m4
