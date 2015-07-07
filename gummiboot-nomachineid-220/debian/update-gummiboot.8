@@ -1,0 +1,31 @@
+.\" Copyright (C) 2014 Julian Andres Klode <jak@debian.org>
+.TH update-gummiboot 8 "2014-04-10" "44-1"
+.SH NAME
+update-gummiboot \- Install / Remove kernel
+.SH SYNOPSIS
+.B update-gummiboot
+.RI [ kernel-version ]
+.SH DESCRIPTION
+.B update-gummiboot
+installs new kernels from /boot to /boot/efi (or whatever configured in
+/etc/default/gummiboot) and adds an entry to the boot loader; or removes
+the kernels.
+
+If no kernel version is specified,
+.B update-gummiboot
+will default to the currently running kernel. If the kernel does not exist in /boot,
+.B update-gummiboot
+will remove the kernel from /boot/efi; otherwise it will be installed.
+
+This interface might change in subsequent versions.
+
+.SH FILES
+
+.IR /etc/default/gummiboot
+
+.SH SEE ALSO
+.BR gummiboot(8)
+
+.SH AUTHOR
+update-gummiboot has been written by Julian Andres Klode for the Debian
+project.

@@ -38,3 +38,4 @@ missing
 
 # wanted files
 !m4/arch.m4
+!debian/*.8

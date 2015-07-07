@@ -14,8 +14,8 @@ Architecture: i386 amd64 x32 ia64
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Built-Using: ${misc:Built-Using}
 Multi-Arch: foreign
-Conflicts: gummiboot (<=48-10)
-Replaces: gummiboot (<=48-10)
+Conflicts: gummiboot
+Replaces: gummiboot
 Provides: gummiboot
 Description: UEFI bootloader
  gummiboot is a simple UEFI bootloader which executes an EFI binary from a file-defined list.

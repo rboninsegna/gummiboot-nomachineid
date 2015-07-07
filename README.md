@@ -5,9 +5,9 @@ Gummiboot 48, without systemd
 
 1. Download this repo with `git clone` or the compressed archives.
 2. `sudo apt-get build-dep gummiboot` (should equal to: `aptitude install build-essential debhelper dh-autoreconf docbook-xsl gnu-efi libblkid-dev pkg-config xsltproc`)
-3. Enter the `gummiboot-nomachineid-48` folder.
-4. `dpkg-buildpackage -b -us -uc`
-5. Install `gummiboot-nomachineid_48-100_amd64.deb` found in the parent folder.
+3. Enter the `gummiboot-nomachineid-220` folder.
+4. `dpkg-buildpackage -us -uc`
+5. Install `gummiboot-nomachineid_220-1_amd64.deb` found in the parent folder.
 
 Or cheat and try skipping to step 5 by downloading that file from Github's "releases" feature...
 I'm not a Github master, sorry!
